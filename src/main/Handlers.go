@@ -6,5 +6,5 @@ import (
 )
 
 func GetTweets(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode("{\"key\":\"salut\"}")
+	json.NewEncoder(w).Encode(getTweets(0))
 }

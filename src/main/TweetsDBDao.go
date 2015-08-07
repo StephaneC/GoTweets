@@ -1,12 +1,13 @@
 package main
-/*
 import (
 	"encoding/json"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"io/ioutil"
 	"log"
 	"os"
+	"fmt"
+	    "github.com/darkhelmet/twitterstream"
+
 )
 
 var (
@@ -14,12 +15,12 @@ var (
 	databaseName = "tweets"
 	collectionName = "tweets"
 	databaseUri  = os.Getenv("MONGODB_ADDON_URI")
-	err          error
 )
 
 func openDbConnection() *mgo.Session {
 	if mgoSession == nil {
 		var err error
+		fmt.Println("database uri : ", databaseUri)
 		mgoSession, err = mgo.Dial(databaseUri)
 		if err != nil {
 			panic(err) // no, not really
@@ -32,28 +33,30 @@ func openDbConnection() *mgo.Session {
 /**
  * get Tweets from DB
  */
-func getTweets(ts long) {
+func getTweets(ts int64) string {
 	//check that connection openned
 	openDbConnection()
-
-	c := session.DB(databaseName).C(collectionName)
-	err = c.Find(bson.M{"timestamp": {"$gt": ts}})
+	var results []Tweet
+	var err error
+	c := mgoSession.DB(databaseName).C(collectionName)
+	search := bson.M{"timestamp": bson.M{"$gt": ts}}
+	err = c.Find(search).All(&results)
 	if err != nil {
-		log.Fatal("Error getting tweets" + err)
+		log.Fatal(err)
 	}
-	tweets, _ := json.Marshal(result)
-	return
+	tweets, _ := json.Marshal(results)
+	return string(tweets)
 }
 
 /**
  * Add tweet into DB
  */
-func addTweet(t string) {
+func addTweet(t *twitterstream.Tweet) {
+	fmt.Println(t)
+	openDbConnection()
 	c := mgoSession.DB(databaseName).C(collectionName)
-	err = c.Insert(t)
+	err := c.Insert(t)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Beer %s created\n", beer.Name)
 }
-*/
