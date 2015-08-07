@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"fmt"
+	"time"
 	    "github.com/darkhelmet/twitterstream"
 
 )
@@ -36,15 +37,16 @@ func openDbConnection() *mgo.Session {
 func getTweets(ts int64) string {
 	//check that connection openned
 	openDbConnection()
-	var results []Tweet
+	var results []twitterstream.Tweet
 	var err error
 	c := mgoSession.DB(databaseName).C(collectionName)
-	search := bson.M{"timestamp": bson.M{"$gt": ts}}
+	search := bson.M{"_id": bson.M{"$gt": bson.NewObjectIdWithTime(time.Unix(ts, 0))}}
 	err = c.Find(search).All(&results)
 	if err != nil {
 		log.Fatal(err)
 	}
 	tweets, _ := json.Marshal(results)
+	fmt.Println(results)
 	return string(tweets)
 }
 
@@ -52,7 +54,7 @@ func getTweets(ts int64) string {
  * Add tweet into DB
  */
 func addTweet(t *twitterstream.Tweet) {
-	fmt.Println(t)
+	//fmt.Println(t)
 	openDbConnection()
 	c := mgoSession.DB(databaseName).C(collectionName)
 	err := c.Insert(t)

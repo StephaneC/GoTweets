@@ -15,7 +15,7 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
-	Route{"GetTweets", "GET", "/tweets", GetTweetsHandler},
+	Route{"GetTweets", "GET", "/tweets", GetTweets},
 }
 
 func NewRouter() *mux.Router {
